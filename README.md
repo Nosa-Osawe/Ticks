@@ -1,4 +1,4 @@
-#       Ticks
+#       Ticks (Progressing project, not completed)
 ## We are reporting the largest species diversity of ticks infestation in Nigeria
 I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick prevalence on cattles at a trade market in Benin City.  Tick data is collected from Six (6) predilection sites of cattles: Head, Shoulders, Belly, Legs, Tail and Neck.
 **Whats new?**
@@ -9,6 +9,8 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 
 ## How to use the repo
 
-1. Find codes in the <Code> folder
-2. Find the data sets in the <Data> folder
-3. Some notes would be found in the <Figures and notes> folder. Maybe
+1. Find codes in the **Code** folder
+2. Find the data sets in the **Data** folder
+3. Some notes would be found in the **Figures and notes** folder.
+
+
