@@ -8,3 +8,4 @@ Tick <- replace(tick, is.na(tick), 0)
 str(Tick)
 
 sum(is.na(Tick))  # Nice and clean
+view(Tick)
