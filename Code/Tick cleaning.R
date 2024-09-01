@@ -9,3 +9,5 @@ str(Tick)
 
 sum(is.na(Tick))  # Nice and clean
 view(Tick)
+
+write.csv(Tick, "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_Tick_sheet.csv")

@@ -1,0 +1,344 @@
+library(tidyverse)
+
+Tick <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_Tick_sheet.csv", 
+                 stringsAsFactors = TRUE)
+
+Tick <- Tick %>% 
+  select(-R..gemma,-X) %>% 
+  rename("R.gemma" = A.gemma)
+colnames(Tick)
+
+
+life_stage_summary <- Tick %>%
+  select(-Sample,-Cattle_ID,-Sex,-Predeliction) %>% 
+  group_by(Life_stage) %>%
+  summarise(across(where(is.numeric), sum)) %>% 
+  head()
+view(life_stage_summary)
+
+
+total_sum <- sum(Tick %>% 
+                   select(-Cattle_ID) %>% 
+                   select(where(is.numeric)) %>%
+                   unlist())
+ 
+
+sum_life_stage <- Tick %>%
+  select(-Cattle_ID) %>% 
+  group_by(Life_stage) %>%
+  summarise(total= sum(across(where(is.numeric))))
+
+Tick %>%
+  select(-Cattle_ID) %>% 
+  group_by(Sex) %>%
+  summarise(total= sum(across(where(is.numeric))))
+
+Tick %>%
+  filter(Sample == "S1", Predeliction == "Neck") %>% 
+  group_by(Cattle_ID) %>%
+  summarise(total= sum(across(where(is.numeric))))
+
+Tick %>% 
+  select(-Cattle_ID) %>% 
+  group_by(Sex) %>%
+  summarise(total= sum(across(where(is.numeric))))
+
+
+Tick %>%
+  select(-Cattle_ID) %>% 
+  group_by(Sample) %>%
+  summarise(total= sum(across(where(is.numeric))))
+
+
+Tick %>% 
+  select(-Cattle_ID) %>%
+  filter(Life_stage == "Nymph") %>% 
+  group_by(Predeliction) %>% 
+  summarise(total= sum(across(where(is.numeric))),
+            across(where(is.numeric), sum))
+
+Predeliction_CA <-Tick %>% 
+  select(-Cattle_ID, -Sex,-Sample,-Life_stage) %>% 
+  group_by(Predeliction) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Predeliction_CA)
+
+
+nmds_pred<- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  group_by(Cattle_ID, Predeliction) %>% 
+  summarise(total= sum(across(where(is.numeric))),
+            across(where(is.numeric), sum)) %>% 
+  filter(total >0) %>% 
+  select(-total)
+view(nmds_pred)
+
+view(nmds_pred)
+nmds_pred <- as.data.frame(nmds_pred)
+
+sum(is.na(nmds_pred))
+
+
+
+nmds_sex<- Tick %>% 
+  select(-Predeliction,-Sample,-Life_stage) %>% 
+  group_by(Cattle_ID,Sex ) %>% 
+  summarise(total= sum(across(where(is.numeric))),
+            across(where(is.numeric), sum)) %>% 
+  filter(total >0) %>% 
+  select(-total)
+view(nmds_sex)
+
+nmds_stage<- Tick %>% 
+  select(-Predeliction,-Sample,-Sex) %>% 
+  group_by(Cattle_ID,Life_stage ) %>% 
+  summarise(total= sum(across(where(is.numeric))),
+            across(where(is.numeric), sum)) %>% 
+  filter(total >0) %>% 
+  select(-total)
+view(nmds_stage)
+
+#-----------------------------------------------------------------------------------------
+library(vegan)
+library(pairwiseAdonis)  
+
+
+pred1 <- nmds_pred[,3:17]
+pred2 <- nmds_pred[,1:2]
+
+pred <- metaMDS(pred1, distance = "bray", k=2, na.rm = TRUE)
+pred$stress
+stressplot(pred)
+
+scores(pred) #### very important 
+
+pred_distance<- vegdist(pred1, method = "bray")
+anova(betadisper(pred_distance, pred2$Predeliction))
+
+adonis2 (pred1~Predeliction, 
+         data = pred2, permutations = 9999, 
+         method = "bray")
+
+pairwise <- pairwise.adonis(pred_distance,pred2$Predeliction)
+pairwise
+
+pred_nmds <- as.data.frame(pred$points)
+pred_nmds_sc <- as.data.frame(scores(pred)$species)  
+combined_pred <- as.data.frame(cbind(nmds_pred, pred_nmds))
+view(combined_pred)
+
+
+
+predilection_colors <- c(
+  "Belly" = "#4daf4a",    # Green
+  "Head" = "#377eb8",     # Blue
+  "Leg" = "#ff7f00",      # Orange
+  "Neck" = "purple",     # Purple
+  "Shoulder" = "#e31a1c", # Red
+  "Tail" = "yellow"      # Yellow
+)
+
+pred_plot  <- ggplot() +
+  geom_point(data = combined_pred, aes(x = MDS1, y = MDS2, 
+                                       color = Predeliction, 
+                                       fill = Predeliction
+                                       ), 
+             size = 3) + 
+  scale_colour_manual(values = predilection_colors)+
+  scale_fill_manual(values = predilection_colors)+
+  theme(
+    text = element_text(family = "Times New Roman", size = 20)
+  ) + labs(x = "NMDS1", y = "NMDS2")+
+  xlim(-4, NA) +  # Set x-axis to start at -4, leave upper limit automatic
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black")+
+  theme_minimal()+
+  
+  guides(
+    color = guide_legend(title = "Predeliction"),   
+    shape = "none", 
+    fill = "none"  # To hide fill legend
+  )
+pred_plot
+
+ggsave(plot= pred_plot, 
+       file = "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\Pred_nmds.jpg",
+       height = 6, width= 8)
+# -----------------------------------------------------------------------------------
+
+sex1 <- nmds_sex[,3:17]
+sex2 <- nmds_sex[,1:2]
+
+sex <- metaMDS(sex1, distance = "bray", k=2, na.rm = TRUE)
+sex$stress
+stressplot(sex)
+
+scores(pred) #### very important 
+
+sex_distance<- vegdist(sex1, method = "bray")
+anova(betadisper(sex_distance, sex2$Sex))
+
+adonis2 (sex1~Sex, 
+         data = sex2, permutations = 9999, 
+         method = "bray")
+
+pairwise_sex <- pairwise.adonis(sex_distance,sex2$Sex)
+pairwise_sex
+
+sex_nmds <- as.data.frame(sex$points)
+sex_nmds_sc <- as.data.frame(scores(sex)$species)  
+combined_sex <- as.data.frame(cbind(nmds_sex, sex_nmds))
+view(combined_sex)
+
+
+sex_plot  <- ggplot() +
+  stat_ellipse(data = combined_sex,  geom = "polygon", 
+               aes(x = MDS1, y = MDS2, 
+                   group = Sex, fill = Sex),
+               level = 0.95, 
+               linewidth = 0.1,
+               alpha = 0.1,
+               show.legend = NA)+ 
+  geom_point(data = combined_sex, aes(x = MDS1, y = MDS2, 
+                                      color = Sex, 
+                                      fill = Sex, 
+                                      shape = Sex), 
+             size = 3) + 
+  stat_ellipse(data = combined_sex, 
+               aes(x = MDS1, y = MDS2, 
+                   group = Sex, 
+                   color = Sex), 
+               geom = "path", 
+               level = 0.95, 
+               linewidth = 0.5,  # Adjust this value to make the line bold
+               show.legend = NA) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black")+
+  theme(
+    text = element_text(family = "Times New Roman", size = 20)
+  ) + labs(x = "NMDS1", y = "NMDS2")+
+  xlim(-4, NA) +  # Set x-axis to start at -4, leave upper limit automatic
+  theme_minimal()+
+  guides(
+    color = guide_legend(title = "Sex"),   
+    shape = "none", 
+    fill = "none"  # To hide fill legend
+  )
+sex_plot
+
+ggsave(plot= sex_plot, 
+       file = "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\sex_nmds.jpg",
+       height = 6, width= 8)
+#-------------------------------------------------------------------------------------
+
+
+stage1 <- nmds_stage[,3:17]
+stage2 <- nmds_stage[,1:2]
+
+stage <- metaMDS(stage1, distance = "bray", k=2, na.rm = TRUE)
+stage$stress
+stressplot(stage)
+
+scores(stage) #### very important 
+
+stage_distance<- vegdist(stage1, method = "bray")
+anova(betadisper(stage_distance, stage2$Life_stage))
+
+adonis2 (stage1~Life_stage, 
+         data = stage2, permutations = 9999, 
+         method = "bray")
+
+pairwise_stage <- pairwise.adonis(stage_distance, stage2$Life_stage)
+pairwise_stage
+
+stage_nmds <- as.data.frame(stage$points)
+stage_nmds_sc <- as.data.frame(scores(stage)$species)  
+combined_stage <- as.data.frame(cbind(stage_nmds, nmds_stage))
+view(combined_stage)
+
+
+stage_plot  <- ggplot() +
+  geom_point(data = combined_stage, aes(x = MDS1, y = MDS2, 
+                                      color = Life_stage, 
+                                      fill = Life_stage,
+                                      shape = Life_stage), 
+             size = 3) + 
+  stat_ellipse(data = combined_stage,  geom = "polygon", 
+               aes(x = MDS1, y = MDS2, 
+                   group = Life_stage, fill = Life_stage),
+               level = 0.95, 
+               linewidth = 0.1,
+               alpha = 0.1,
+               show.legend = NA)+ 
+  stat_ellipse(data = combined_stage, 
+               aes(x = MDS1, y = MDS2, 
+                   group = Life_stage, 
+                   color = Life_stage), 
+               geom = "path", 
+               level = 0.95, 
+               linewidth = 0.5,  # Adjust this value to make the line bold
+               show.legend = NA) +
+  scale_colour_manual(values = c('red',"blue"))+
+  scale_fill_manual(values = c("red","blue"))+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black")+
+  theme(
+    text = element_text(family = "Times New Roman", size = 20)
+  ) + labs(x = "NMDS1", y = "NMDS2")+
+  xlim(-3, NA) +  # Set x-axis to start at -4, leave upper limit automatic
+  theme_minimal()+
+  guides(
+    color = guide_legend(title = "Life stage"),   
+    shape = "none", 
+    fill = "none"  # To hide fill legend
+  )
+stage_plot
+
+ggsave(plot= stage_plot, 
+       file = "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\stage_nmds.jpg",
+       height = 6, width= 8)
+
+
+predilection <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage,-Cattle_ID) %>% 
+  group_by(Predeliction) %>% 
+  summarise(total= sum(across(where(is.numeric))),
+            across(where(is.numeric), sum)) %>% 
+  filter(total >0) %>% 
+  select(-total)%>% 
+  t()  # Transpose 
+
+colnames(predilection) <- predilection[1, ]
+predilection <- predilection[-1, ]
+
+predilection <- as.data.frame(predilection)
+predilection <- predilection %>%
+  tibble::rownames_to_column(var = "Species")
+rownames(predilection) <- NULL
+
+
+predilection %>% 
+  mutate(across(2:7, as.numeric)) %>%
+  group_by(Species) %>% 
+  summarise(across(where(is.numeric), sum), 
+            total= sum(across(where(is.numeric)))) 
+
+
+write.csv(predilection,"C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Predilection.csv")
+
+
+length(predilection)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
