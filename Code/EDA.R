@@ -173,7 +173,7 @@ sex <- metaMDS(sex1, distance = "bray", k=2, na.rm = TRUE)
 sex$stress
 stressplot(sex)
 
-scores(pred) #### very important 
+scores(sex) #### very important 
 
 sex_distance<- vegdist(sex1, method = "bray")
 anova(betadisper(sex_distance, sex2$Sex))
@@ -327,16 +327,18 @@ predilection %>%
 write.csv(predilection,"C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Predilection.csv")
 
 
-length(predilection)
 
 
 
+Cattle<- Tick %>%
+  group_by(Cattle_ID) %>%
+  summarise(across(where(is.numeric), sum)) 
+  
 
+view(Cattle)
 
-
-
-
-
+write.csv(Cattle,
+          "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\cattle.csv")
 
 
 
