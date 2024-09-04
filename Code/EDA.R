@@ -8,7 +8,7 @@ Tick <- Tick %>%
   rename("R.gemma" = A.gemma)
 colnames(Tick)
 
-
+                                                                                                            
 life_stage_summary <- Tick %>%
   select(-Sample,-Cattle_ID,-Sex,-Predeliction) %>% 
   group_by(Life_stage) %>%
@@ -341,6 +341,57 @@ write.csv(Cattle,
           "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\cattle.csv")
 
 
+
+
+unique(Tick$Predeliction)
+
+Leg <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Leg") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Leg)
+
+Belly <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Belly") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Belly)
+
+Head <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Head") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Head)
+
+
+Tail <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Tail") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Tail)
+
+Neck <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Neck") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Neck)
+
+Shoulder <- Tick %>% 
+  select(-Sex,-Sample,-Life_stage) %>% 
+  filter(Predeliction == "Shoulder") %>% 
+  group_by(Cattle_ID) %>% 
+  summarise(across(where(is.numeric), sum))
+view(Shoulder)
+
+overall_pred <- as.data.frame(rbind(Leg, Belly, Head, Tail, Neck, Shoulder))
+
+write.csv(overall_pred,
+          "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\overall_pred.csv")
 
 
 
