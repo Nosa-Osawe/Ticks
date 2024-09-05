@@ -394,4 +394,108 @@ write.csv(overall_pred,
           "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\overall_pred.csv")
 
 
+diversity <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\PAST diversity.csv")
 
+
+
+
+
+abundance <- diversity %>%
+  select(Predilection, Individuals) %>%
+  mutate(Predilection = as.factor(Predilection)) %>%  # Convert Site to a factor
+  ggplot() +
+  geom_violin(aes(x = Predilection, y = Individuals, fill = Predilection), color = NA, alpha = 0.3)+
+  geom_boxplot(aes(x = Predilection, y = Individuals, fill = Predilection),
+               notch = FALSE,
+               outlier.colour = NULL,
+               outlier.color = "transparent",
+               outlier.fill = NULL,
+               width= 0.2) +
+  scale_fill_manual(values = predilection_colors) +  # Set fill colors
+  scale_color_manual(values = predilection_colors) + 
+  labs(x= "Predilection",
+       y= "Abundance", legend = FALSE)+
+  theme(
+    text = element_text(family = "Times New Roman", size = 24))+# Color of the mean points
+  theme_classic()
+print(abundance)
+
+ggsave(plot = abundance, 
+       file ="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\abundance.jpg",
+       height = 4, width = 8)
+
+
+
+Taxa_S <- diversity %>%
+  select(Predilection, Taxa_S) %>%
+  mutate(Predilection = as.factor(Predilection)) %>%  # Convert Site to a factor
+  ggplot() +
+  geom_violin(aes(x = Predilection, y = Taxa_S, fill = Predilection), color = NA, alpha = 0.3)+
+  geom_boxplot(aes(x = Predilection, y = Taxa_S, fill = Predilection),
+               notch = FALSE,
+               outlier.colour = NULL,
+               outlier.color = "transparent",
+               outlier.fill = NULL,
+               width= 0.2) +
+  scale_fill_manual(values = predilection_colors) +  # Set fill colors
+  scale_color_manual(values = predilection_colors) + 
+  labs(x= "Predilection",
+       y= "Taxa richness", legend = FALSE)+
+  theme(
+    text = element_text(family = "Times New Roman", size = 24))+# Color of the mean points
+  theme_classic()
+print(Taxa_S)
+
+ggsave(plot = Taxa_S, 
+       file ="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\Taxa_S.jpg",
+       height = 4, width = 8)
+
+Shannon <- diversity %>%
+  select(Predilection, Shannon_H) %>%
+  mutate(Predilection = as.factor(Predilection)) %>%  # Convert Site to a factor
+  ggplot() +
+  geom_violin(aes(x = Predilection, y = Shannon_H, fill = Predilection), color = NA, alpha=0.3)+
+  geom_boxplot(aes(x = Predilection, y = Shannon_H, fill = Predilection),
+               notch = FALSE,
+               outlier.colour = NULL,
+               outlier.color = "transparent",
+               outlier.fill = NULL,
+               width= 0.2) +
+  scale_fill_manual(values = predilection_colors) +  # Set fill colors
+  scale_color_manual(values = predilection_colors) + 
+  labs(x= "Predilection",
+       y= "Shannon index", legend = FALSE)+
+  theme(
+    text = element_text(family = "Times New Roman", size = 24))+# Color of the mean points
+  theme_classic()
+print(Shannon)
+
+
+ggsave(plot = Shannon, 
+       file ="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\shannon.jpg",
+       height = 4, width = 8)
+
+Margalef <- diversity %>%
+  select(Predilection, Margalef) %>%
+  mutate(Predilection = as.factor(Predilection)) %>%  # Convert Site to a factor
+  ggplot() +
+  geom_violin(aes(x = Predilection, y = Margalef, fill = Predilection), color = NA, alpha=0.3)+
+  geom_boxplot(aes(x = Predilection, y = Margalef, fill = Predilection),
+               notch = FALSE,
+               outlier.colour = NULL,
+               outlier.color = "transparent",
+               outlier.fill = NULL,
+               width= 0.2) +
+  scale_fill_manual(values = predilection_colors) +  # Set fill colors
+  scale_color_manual(values = predilection_colors) + 
+  labs(x= "Predilection",
+       y= "Margalef index", legend = FALSE)+
+  theme(
+    text = element_text(family = "Times New Roman", size = 24))+# Color of the mean points
+  theme_classic()
+print(Shannon)
+
+
+ggsave(plot = Margalef, 
+       file ="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\Margalef.jpg",
+       height = 4, width = 8)
