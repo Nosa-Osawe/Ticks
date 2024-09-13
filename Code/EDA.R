@@ -2,11 +2,19 @@ library(tidyverse)
 
 Tick <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_Tick_sheet.csv", 
                  stringsAsFactors = TRUE)
+view(Tick)
 
 Tick <- Tick %>% 
-  select(-R..gemma,-X) %>% 
+  select(- R..gemma,
+         -X) %>% 
   rename("R.gemma" = A.gemma)
 colnames(Tick)
+
+Tick <- Tick %>% 
+  select(-Sample)
+
+
+Tick %>% select(Sample) %>% head()
 
                                                                                                             
 life_stage_summary <- Tick %>%
@@ -499,3 +507,125 @@ print(Shannon)
 ggsave(plot = Margalef, 
        file ="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\Margalef.jpg",
        height = 4, width = 8)
+
+###############################################################################################
+
+# --        Negative binomial regression testing
+
+library(lme4)
+library(lmerTest)
+library(MASS)
+library(ggfortify)
+library(multcomp)
+library(emmeans)
+library(car)
+
+
+diversity$Predilection <- factor(diversity$Predilection)
+
+Individuals_compare <- glm.nb(Individuals ~ Predilection,
+                            data = diversity,
+                            link = log)
+summary(Individuals_compare)        ### No sig. difference
+multi_comp_individuals <- glht(Individuals_compare,
+                             linfct = mcp(Predilection = "Tukey"))
+summary(multi_comp_individuals)
+
+#-----------------------------------------------------------------------------------------
+
+Taxa_S_compare <- glm.nb(Taxa_S ~ Predilection,
+                              data = diversity,
+                              link = log)
+summary(Taxa_S_compare)        ### No sig. difference
+multi_comp_Taxa_S <- glht(Taxa_S_compare,
+                               linfct = mcp(Predilection = "Tukey"))
+summary(multi_comp_Taxa_S)
+
+#--------------------------------------------------------------------------------------
+library(dunn.test)
+Margalef_compare <- lm(Margalef ~ Predilection,
+                         data = diversity)
+summary(Margalef_compare)        ### No sig. difference
+multi_comp_Margalef <- glht(Margalef_compare,
+                          linfct = mcp(Predilection = "Tukey"))
+summary(multi_comp_Margalef)
+
+attach(diversity)
+
+kruskal.test(Margalef ~ Predilection, data = diversity)  
+
+
+###########################################################################################
+
+
+
+tick_famd_data<-Tick %>% 
+  select(-Cattle_ID, - Sample) %>% 
+  group_by(Predeliction,Sex,Life_stage) %>% 
+  summarise(
+    across(where(is.numeric), sum)
+  ) %>% 
+  rename("A.va" =4,
+         "A.co" = 5,
+         "B.an"= 6,
+         "B.de" =7,
+         "B.ge" = 8,
+         "H.la" = 9,
+         "R.gu" = 10,
+         "R.lu"= 11,
+         "R.mu" = 12,
+         "R.sa"= 13,
+         "R.se" = 14,
+         "B.sp"= 15,
+         "R.qu" =16,
+         "R.ge"=17,
+         "R.fa"= 18) %>% 
+  as.data.frame()
+
+view(tick_famd_data)
+
+
+library("FactoMineR")
+library("factoextra")
+library(tidyverse)
+library("corrplot")
+ 
+
+Tick.famd <- FAMD(tick_famd_data, graph = FALSE)
+eig. <- get_eigenvalue(Tick.famd)
+head(eig.)
+ 
+
+famd_quant <- as.data.frame(Tick.famd$quali.var$coord[,1:2])
+famd_quali <- as.data.frame(Tick.famd$quanti.var$coord[,1:2])
+
+library(ggrepel)
+
+famd_plot <- ggplot() +
+  geom_text_repel(data = famd_quant, 
+                  aes(x = Dim.1, y = Dim.2, label = rownames(famd_quant)
+                  ), color = "darkblue")+ 
+  geom_text_repel(data = famd_quali, 
+                  aes(x = Dim.1, y = Dim.2, label = rownames(famd_quali)
+                  ), color = "red")+
+  labs(x = "Dim. 1 (23.96%)",
+       y = "Dim. 2 (22.53%)")+
+  theme_bw()
+
+print(famd_plot)
+
+ggsave(plot = famd_plot, 
+       file="C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Notes & Figures\\famd_plot.jpg",
+       height = 6, width = 8)
+#   -------------------------------------------------------------------------------------
+
+Tick %>% 
+  select(-Cattle_ID, -Sample,-Sex) %>% 
+  filter(Predeliction== "Head"| Predeliction == "Shoulder") %>% 
+  group_by(Life_stage,Predeliction) %>% 
+  summarise(
+    across(where(is.numeric), sum)
+  )
+
+
+
