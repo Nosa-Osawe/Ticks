@@ -14,14 +14,13 @@ Tick <- Tick %>%
   select(-Sample)
 
 
-Tick %>% select(Sample) %>% head()
-
                                                                                                             
 life_stage_summary <- Tick %>%
-  select(-Sample,-Cattle_ID,-Sex,-Predeliction) %>% 
-  group_by(Life_stage) %>%
-  summarise(across(where(is.numeric), sum)) %>% 
-  head()
+  select(-Cattle_ID,-Sex) %>% 
+  group_by(
+   # Life_stage, 
+    Predeliction) %>%
+  summarise(total= sum(across(where(is.numeric))))
 view(life_stage_summary)
 
 
@@ -560,7 +559,7 @@ kruskal.test(Margalef ~ Predilection, data = diversity)
 
 
 tick_famd_data<-Tick %>% 
-  select(-Cattle_ID, - Sample) %>% 
+  select(-Cattle_ID) %>% 
   group_by(Predeliction,Sex,Life_stage) %>% 
   summarise(
     across(where(is.numeric), sum)
@@ -582,8 +581,55 @@ tick_famd_data<-Tick %>%
          "R.fa"= 18) %>% 
   as.data.frame()
 
-view(tick_famd_data)
+colnames(Tick)
 
+
+tick_famd_data_mean<-Tick %>% 
+  select(-Cattle_ID) %>% 
+  group_by(Predeliction,Sex,Life_stage) %>% 
+  summarise(
+    across(where(is.numeric), mean)
+  ) %>% 
+  rename("A.va" =4,
+         "A.co" = 5,
+         "B.an"= 6,
+         "B.de" =7,
+         "B.ge" = 8,
+         "H.la" = 9,
+         "R.gu" = 10,
+         "R.lu"= 11,
+         "R.mu" = 12,
+         "R.sa"= 13,
+         "R.se" = 14,
+         "B.sp"= 15,
+         "R.qu" =16,
+         "R.ge"=17,
+         "R.fa"= 18) %>% 
+  as.data.frame()
+view(tick_famd_data_mean)
+
+Tick %>% 
+  select(-Cattle_ID) %>% 
+  group_by(Predeliction, Sex, Life_stage) %>% 
+  summarise(
+    across(where(is.numeric), ~ sum(. > 0, na.rm = TRUE))
+  ) %>% 
+  rename("A.va" = 4,
+         "A.co" = 5,
+         "B.an" = 6,
+         "B.de" = 7,
+         "B.ge" = 8,
+         "H.la" = 9,
+         "R.gu" = 10,
+         "R.lu" = 11,
+         "R.mu" = 12,
+         "R.sa" = 13,
+         "R.se" = 14,
+         "B.sp" = 15,
+         "R.qu" = 16,
+         "R.ge" = 17,
+         "R.fa" = 18) %>% 
+  as.data.frame()
 
 library("FactoMineR")
 library("factoextra")
@@ -626,6 +672,5 @@ Tick %>%
   summarise(
     across(where(is.numeric), sum)
   )
-
 
 
