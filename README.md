@@ -4,7 +4,7 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 **Whats new?**
 1. We are investigating ticks --For the first time-- at community level.
 2. We are having the <u> largest species diverstiy of ticks ever reported in studies from Nigeria (and probably West Africa)
-3. We are using Unsupervised clustering methods (K means, K-Mediods) to try to match cattles to where they are imported from, using the tick communities infestations on them as indicators.
+3. I am using Factor analysis of Mixed Data (FAMD) to find potential relationship between predilection area, gender and species of ticks.
 
 
 ## How to use the repo
