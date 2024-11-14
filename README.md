@@ -16,4 +16,4 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 
  
 ![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/Margalef.jpg?raw=true)
-!(https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/sex_nmds.jpg?raw=true)
+![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/sex_nmds.jpg?raw=true)
