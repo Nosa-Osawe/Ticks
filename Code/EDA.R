@@ -16,9 +16,9 @@ Tick <- Tick %>%
 
                                                                                                             
 life_stage_summary <- Tick %>%
-  select(-Cattle_ID,-Sex) %>% 
+  select(-Cattle_ID) %>% 
   group_by(
-   # Life_stage, 
+    Life_stage, 
     Predeliction) %>%
   summarise(total= sum(across(where(is.numeric))))
 view(life_stage_summary)
