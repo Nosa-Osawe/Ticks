@@ -14,3 +14,6 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 3. Some notes would be found in the **Figures and notes** folder.
 
 
+ 
+![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/Margalef.jpg?raw=true)
+![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/sex_nmds.jpg?raw=true)
