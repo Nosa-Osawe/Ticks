@@ -10,8 +10,7 @@ Tick <- Tick %>%
   rename("R.gemma" = A.gemma)
 colnames(Tick)
 
-Tick <- Tick %>% 
-  select(-Sample)
+#Tick <- Tick %>%  select(-Sample)
 
 
                                                                                                             
