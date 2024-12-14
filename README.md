@@ -21,4 +21,4 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 
 Factor Analysis of Mixed Data (FAMD) Plot
 
-![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/famd_plot.jpgraw=true)
+![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/famd_plot.jpg?raw=true)
