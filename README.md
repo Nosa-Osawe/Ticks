@@ -1,4 +1,4 @@
-#       Ticks (Progressing project, not completed)
+#       Tick project: Community level studies on tick infestation 
 ## We are reporting the largest species diversity of ticks infestation in Nigeria
 I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick prevalence on cattles at a trade market in Benin City.  Tick data is collected from Six (6) predilection sites of cattles: Head, Shoulders, Belly, Legs, Tail and Neck.
 **Whats new?**
