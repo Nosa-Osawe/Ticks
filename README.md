@@ -1,4 +1,4 @@
-#       Ticks (Progressing project, not completed)
+#       Tick project: Community level studies on tick infestation 
 ## We are reporting the largest species diversity of ticks infestation in Nigeria
 I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick prevalence on cattles at a trade market in Benin City.  Tick data is collected from Six (6) predilection sites of cattles: Head, Shoulders, Belly, Legs, Tail and Neck.
 **Whats new?**
@@ -16,4 +16,10 @@ I and Dr Omoregie from the University of Benin, Nigeria, are investigating tick 
 
  
 ![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/Margalef.jpg?raw=true)
+
+Non metric multisimentional scale plot showing ticks community structure as they vary by sex
 ![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/sex_nmds.jpg?raw=true)
+
+Factor Analysis of Mixed Data (FAMD) Plot
+
+![Descriptive Alt Text](https://github.com/Nosa-Osawe/Ticks/blob/main/Notes%20%26%20Figures/famd_plot.jpg?raw=true)
