@@ -21,7 +21,8 @@ ticks_S %>%
   filter(Predilection=="Head") %>% 
   group_by(Cattle) %>% 
   summarise(Total_ticks = sum(across(where(is.numeric))),
-            across(where(is.numeric), sum)) %>% 
+            across(where(is.numeric), sum)
+            ) %>% 
   as.data.frame() %>% 
   mutate(A.Variegatum_b = if_else(A.Variegatum>0,1,0)) %>% 
   mutate(H.impressum_b = if_else(H.impressum>0,1,0)) %>% 
