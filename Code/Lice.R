@@ -40,4 +40,16 @@ check_overdispersion(M.galinae.quasi)
 emmeans(M.galinae.quasi, pairwise ~ Location,
         adjust = "Tukey")
 check_model(M.galinae.quasi)
-check_homogeneity(M.galinae.quasi)
+check_homogeneity(M.galinae.quasi)    # Heteroskedastic mfk!
+check_zeroinflation(M.galinae.quasi)  # model OK
+model_performance(M.galinae.quasi)
+
+
+
+lm1 <- lm (Menopon_galinae ~ Location, data = lice)
+check_model(lm1)
+model_performance(lm1)
+check_homogeneity(lm1)
+check_normality(lm1)
+
+
