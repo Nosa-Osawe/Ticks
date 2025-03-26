@@ -14,7 +14,9 @@ dplyr::select(-Data_collector) %>%
   summarise(total= sum(across(where(is.numeric))),
             mean_Menacanthis_straminus = mean(Menacanthis_straminus),
             mean_Menopon_galinae= mean(Menopon_galinae),
-across(where(is.numeric), sum))%>% 
+            se_Me.straminus = sd(Menacanthis_straminus)/sqrt(length(Menacanthis_straminus)),
+            se_Me.galinae = sd(Menopon_galinae)/sqrt(length(Menopon_galinae)),
+            across(where(is.numeric), sum))%>% 
   as.data.frame()
 
       #       ----------- Menacanthis_straminus-------------------
@@ -45,11 +47,19 @@ check_zeroinflation(M.galinae.quasi)  # model OK
 model_performance(M.galinae.quasi)
 
 
+lice %>% 
+  dplyr::select(-Data_collector) %>% 
+  mutate(prev_M.straminus = ifelse(Menacanthis_straminus>0, 1, 0),
+         prev_Menopon_galinae = ifelse(Menopon_galinae>0, 1, 0)) %>%
+ dplyr::select(-Menacanthis_straminus,-Menopon_galinae) %>% 
+  group_by(Location) %>% 
+  summarise(across(where(is.numeric), sum)) %>% 
+  mutate(prev_M.straminus= prev_M.straminus*2, #prevalence=(count(lice present)/50)*100
+         prev_Menopon_galinae= prev_Menopon_galinae*2) %>% 
+  as.data.frame()
 
-lm1 <- lm (Menopon_galinae ~ Location, data = lice)
-check_model(lm1)
-model_performance(lm1)
-check_homogeneity(lm1)
-check_normality(lm1)
+
+
+
 
 
