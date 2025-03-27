@@ -2,7 +2,7 @@ require(tidyverse)
 require(readxl)
 library(emmeans)
 library(performance)
-library(MASS)
+#library(MASS)
 
 lice <- read_excel("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Lice.xlsx",
                    sheet = "workingsheet")
