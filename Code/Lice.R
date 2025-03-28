@@ -60,6 +60,6 @@ lice %>%
 
 
 
-
-
+citation("emmeans")
+citation("performance")
 
