@@ -1,17 +1,32 @@
 library(tidyverse)
 
 Tick <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_Tick_sheet.csv", 
-                 stringsAsFactors = TRUE)
-view(Tick)
+                 stringsAsFactors = TRUE) %>% # We made some taxonomy corrections after review
+  rename("A. variegatum" = "A..variegatum",
+         "A. coharenses" = "A..coharenses",
+         "R. annulatus"= "B..annulatus",
+         "R. decoloratus" = "B..decoloratus",
+         "R. geigyi" = "B..geigyi",
+         "H.laechi" =  "H..laechi",
+         "R. lunulatus" = "R..lunulatus",
+         "R. muhsamae" = "R..muhsame",
+  
+         "R. senegalensis" = "R..senegalensis",
+         "Rhipicephalus sp." = "Boophilus.sp.",
+      
+         ) %>%  
+  mutate("R. sanguineus" = rowSums(across(c('R..sanguineus', 'R.fanguineus'))),
+         "R. guilhoni" = rowSums(across(c('R..quilhoni','R..gulhoni'))),
+         "A. gemma" = rowSums(across(c("A.gemma", "R..gemma")))
+         ) %>% 
+  select(-c("R..quilhoni","R.fanguineus",
+            "R..gemma", "R..gulhoni", "R..sanguineus", "A.gemma"   )) %>% 
+  select(-X) # The useless (serial number) column
 
-Tick <- Tick %>% 
-  select(- R..gemma,
-         -X) %>% 
-  rename("R.gemma" = A.gemma)
 colnames(Tick)
 
-#Tick <- Tick %>%  select(-Sample)
-
+# -----------------------
+ 
 
                                                                                                             
 life_stage_summary <- Tick %>%
@@ -30,18 +45,21 @@ total_sum <- sum(Tick %>%
  
 
 sum_life_stage <- Tick %>%
-  select(-Cattle_ID) %>% 
+  dplyr::select(-Cattle_ID) %>% 
   group_by(Life_stage) %>%
   summarise(total= sum(across(where(is.numeric))))
 
+# sex of adults ticks
+
 Tick %>%
+  filter(Life_stage == "Adult") %>% 
   select(-Cattle_ID) %>% 
   group_by(Sex) %>%
   summarise(total= sum(across(where(is.numeric))))
 
 Tick %>%
   filter(Sample == "S1", Predeliction == "Neck") %>% 
-  group_by(Cattle_ID) %>%
+  dplyr::group_by(Cattle_ID) %>%
   summarise(total= sum(across(where(is.numeric))))
 
 Tick %>% 
@@ -50,11 +68,23 @@ Tick %>%
   summarise(total= sum(across(where(is.numeric))))
 
 
-Tick %>%
+Tick %>% 
   select(-Cattle_ID) %>% 
-  group_by(Sample) %>%
+  group_by(Sex) %>%
   summarise(total= sum(across(where(is.numeric))))
 
+Tick %>%
+ dplyr::select(-Cattle_ID, - Sex) %>% 
+  group_by(Predeliction) %>%
+  summarise(across(where(is.numeric), sum)) %>% 
+  as.data.frame() %>% 
+  write.csv(file = "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\abundance.csv")
+
+write.csv(Tick %>% 
+            select(-Cattle_ID, -Sex,-Sample,-Life_stage) %>% 
+            group_by(Predeliction) %>% 
+            summarise(across(where(is.numeric), sum)), 
+          file = "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Tick_Abundance.csv")
 
 Tick %>% 
   select(-Cattle_ID) %>%
@@ -67,19 +97,20 @@ Predeliction_CA <-Tick %>%
   select(-Cattle_ID, -Sex,-Sample,-Life_stage) %>% 
   group_by(Predeliction) %>% 
   summarise(across(where(is.numeric), sum))
-view(Predeliction_CA)
+# view(Predeliction_CA)
 
 
 nmds_pred<- Tick %>% 
+  filter(Life_stage == "Adult") %>% # Only adults
   select(-Sex,-Sample,-Life_stage) %>% 
   group_by(Cattle_ID, Predeliction) %>% 
   summarise(total= sum(across(where(is.numeric))),
             across(where(is.numeric), sum)) %>% 
   filter(total >0) %>% 
   select(-total)
-view(nmds_pred)
+# view(nmds_pred)
 
-view(nmds_pred)
+# view(nmds_pred)
 nmds_pred <- as.data.frame(nmds_pred)
 
 sum(is.na(nmds_pred))
@@ -87,13 +118,14 @@ sum(is.na(nmds_pred))
 
 
 nmds_sex<- Tick %>% 
+  filter(Life_stage == "Adult") %>% # Only adults
   select(-Predeliction,-Sample,-Life_stage) %>% 
   group_by(Cattle_ID,Sex ) %>% 
   summarise(total= sum(across(where(is.numeric))),
             across(where(is.numeric), sum)) %>% 
   filter(total >0) %>% 
   select(-total)
-view(nmds_sex)
+# view(nmds_sex)
 
 nmds_stage<- Tick %>% 
   select(-Predeliction,-Sample,-Sex) %>% 
@@ -102,14 +134,15 @@ nmds_stage<- Tick %>%
             across(where(is.numeric), sum)) %>% 
   filter(total >0) %>% 
   select(-total)
-view(nmds_stage)
+# view(nmds_stage)
 
 #-----------------------------------------------------------------------------------------
 library(vegan)
 library(pairwiseAdonis)  
 
 
-pred1 <- nmds_pred[,3:17]
+pred1 <- nmds_pred %>% 
+  select(-c("Cattle_ID", "Predeliction"))
 pred2 <- nmds_pred[,1:2]
 
 pred <- metaMDS(pred1, distance = "bray", k=2, na.rm = TRUE)
@@ -127,6 +160,9 @@ adonis2 (pred1~Predeliction,
 
 pairwise <- pairwise.adonis(pred_distance,pred2$Predeliction)
 pairwise
+
+write.csv(pairwise, 
+          "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\nmds1_permanova.csv")
 
 pred_nmds <- as.data.frame(pred$points)
 pred_nmds_sc <- as.data.frame(scores(pred)$species)  
@@ -172,14 +208,14 @@ ggsave(plot= pred_plot,
        height = 6, width= 8)
 # -----------------------------------------------------------------------------------
 
-sex1 <- nmds_sex[,3:17]
+sex1 <- nmds_sex[,-c(1,2)]
 sex2 <- nmds_sex[,1:2]
 
 sex <- metaMDS(sex1, distance = "bray", k=2, na.rm = TRUE)
 sex$stress
 stressplot(sex)
 
-scores(sex) #### very important 
+scores(sex) 
 
 sex_distance<- vegdist(sex1, method = "bray")
 anova(betadisper(sex_distance, sex2$Sex))
@@ -194,7 +230,7 @@ pairwise_sex
 sex_nmds <- as.data.frame(sex$points)
 sex_nmds_sc <- as.data.frame(scores(sex)$species)  
 combined_sex <- as.data.frame(cbind(nmds_sex, sex_nmds))
-view(combined_sex)
+# view(combined_sex)
 
 
 sex_plot  <- ggplot() +
@@ -238,7 +274,7 @@ ggsave(plot= sex_plot,
 #-------------------------------------------------------------------------------------
 
 
-stage1 <- nmds_stage[,3:17]
+stage1 <- nmds_stage[,-c(1,2)]
 stage2 <- nmds_stage[,1:2]
 
 stage <- metaMDS(stage1, distance = "bray", k=2, na.rm = TRUE)
@@ -356,21 +392,21 @@ Leg <- Tick %>%
   filter(Predeliction == "Leg") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Leg)
+# view(Leg)
 
 Belly <- Tick %>% 
   select(-Sex,-Sample,-Life_stage) %>% 
   filter(Predeliction == "Belly") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Belly)
+# view(Belly)
 
 Head <- Tick %>% 
   select(-Sex,-Sample,-Life_stage) %>% 
   filter(Predeliction == "Head") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Head)
+# view(Head)
 
 
 Tail <- Tick %>% 
@@ -378,21 +414,21 @@ Tail <- Tick %>%
   filter(Predeliction == "Tail") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Tail)
+# view(Tail)
 
 Neck <- Tick %>% 
   select(-Sex,-Sample,-Life_stage) %>% 
   filter(Predeliction == "Neck") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Neck)
+# view(Neck)
 
 Shoulder <- Tick %>% 
   select(-Sex,-Sample,-Life_stage) %>% 
   filter(Predeliction == "Shoulder") %>% 
   group_by(Cattle_ID) %>% 
   summarise(across(where(is.numeric), sum))
-view(Shoulder)
+# view(Shoulder)
 
 overall_pred <- as.data.frame(rbind(Leg, Belly, Head, Tail, Neck, Shoulder))
 
@@ -482,7 +518,7 @@ ggsave(plot = Shannon,
        height = 4, width = 8)
 
 Margalef <- diversity %>%
-  select(Predilection, Margalef) %>%
+  dplyr::select(Predilection, Margalef) %>%
   mutate(Predilection = as.factor(Predilection)) %>%  # Convert Site to a factor
   ggplot() +
   geom_violin(aes(x = Predilection, y = Margalef, fill = Predilection), color = NA, alpha=0.3)+
@@ -499,7 +535,7 @@ Margalef <- diversity %>%
   theme(
     text = element_text(family = "Times New Roman", size = 24))+# Color of the mean points
   theme_classic()
-print(Shannon)
+print(Margalef)
 
 
 ggsave(plot = Margalef, 
@@ -529,6 +565,7 @@ multi_comp_individuals <- glht(Individuals_compare,
                              linfct = mcp(Predilection = "Tukey"))
 summary(multi_comp_individuals)
 
+ 
 #-----------------------------------------------------------------------------------------
 
 Taxa_S_compare <- glm.nb(Taxa_S ~ Predilection,
@@ -557,7 +594,7 @@ kruskal.test(Margalef ~ Predilection, data = diversity)
 
 
 
-tick_famd_data<-Tick %>% 
+tick_famd_data<-Tick %>% # trying for sums
   select(-Cattle_ID) %>% 
   group_by(Predeliction,Sex,Life_stage) %>% 
   summarise(
@@ -565,25 +602,23 @@ tick_famd_data<-Tick %>%
   ) %>% 
   rename("A.va" =4,
          "A.co" = 5,
-         "B.an"= 6,
-         "B.de" =7,
-         "B.ge" = 8,
+         "R.an"= 6,
+         "R.de" =7,
+         "R.ge" = 8,
          "H.la" = 9,
-         "R.gu" = 10,
-         "R.lu"= 11,
-         "R.mu" = 12,
-         "R.sa"= 13,
-         "R.se" = 14,
-         "B.sp"= 15,
-         "R.qu" =16,
-         "R.ge"=17,
-         "R.fa"= 18) %>% 
+         "R.lu"= 10,
+         "R.mu" = 11,
+         "R.se" = 12,
+         "R.sp"= 13,
+         "R.sa" =14,
+         "R.gu"=15,
+         "A.ge"= 16) %>% 
   as.data.frame()
 
 colnames(Tick)
 
 
-tick_famd_data_mean<-Tick %>% 
+tick_famd_data_mean<-Tick %>%  # trying for mean
   select(-Cattle_ID) %>% 
   group_by(Predeliction,Sex,Life_stage) %>% 
   summarise(
@@ -591,19 +626,17 @@ tick_famd_data_mean<-Tick %>%
   ) %>% 
   rename("A.va" =4,
          "A.co" = 5,
-         "B.an"= 6,
-         "B.de" =7,
-         "B.ge" = 8,
+         "R.an"= 6,
+         "R.de" =7,
+         "R.ge" = 8,
          "H.la" = 9,
-         "R.gu" = 10,
-         "R.lu"= 11,
-         "R.mu" = 12,
-         "R.sa"= 13,
-         "R.se" = 14,
-         "B.sp"= 15,
-         "R.qu" =16,
-         "R.ge"=17,
-         "R.fa"= 18) %>% 
+         "R.lu"= 10,
+         "R.mu" = 11,
+         "R.se" = 12,
+         "R.sp"= 13,
+         "R.sa" =14,
+         "R.gu"=15,
+         "A.ge"= 16) %>% 
   as.data.frame()
 view(tick_famd_data_mean)
 
@@ -613,21 +646,19 @@ Tick %>%
   summarise(
     across(where(is.numeric), ~ sum(. > 0, na.rm = TRUE))
   ) %>% 
-  rename("A.va" = 4,
+  rename("A.va" =4,
          "A.co" = 5,
-         "B.an" = 6,
-         "B.de" = 7,
-         "B.ge" = 8,
+         "R.an"= 6,
+         "R.de" =7,
+         "R.ge" = 8,
          "H.la" = 9,
-         "R.gu" = 10,
-         "R.lu" = 11,
-         "R.mu" = 12,
-         "R.sa" = 13,
-         "R.se" = 14,
-         "B.sp" = 15,
-         "R.qu" = 16,
-         "R.ge" = 17,
-         "R.fa" = 18) %>% 
+         "R.lu"= 10,
+         "R.mu" = 11,
+         "R.se" = 12,
+         "R.sp"= 13,
+         "R.sa" =14,
+         "R.gu"=15,
+         "A.ge"= 16) %>% 
   as.data.frame()
 
 library("FactoMineR")
@@ -653,8 +684,8 @@ famd_plot <- ggplot() +
   geom_text_repel(data = famd_quali, 
                   aes(x = Dim.1, y = Dim.2, label = rownames(famd_quali)
                   ), color = "red")+
-  labs(x = "Dim. 1 (23.96%)",
-       y = "Dim. 2 (22.53%)")+
+  labs(x = "Dim. 1 (26.16%)",
+       y = "Dim. 2 (21.52%)")+
   theme_bw()
 
 print(famd_plot)
@@ -664,6 +695,7 @@ ggsave(plot = famd_plot,
        height = 6, width = 8)
 #   -------------------------------------------------------------------------------------
 
+# just checking the head and shoulder collections
 Tick %>% 
   select(-Cattle_ID, -Sample,-Sex) %>% 
   filter(Predeliction== "Head"| Predeliction == "Shoulder") %>% 
@@ -673,3 +705,21 @@ Tick %>%
   )
 
 
+
+diversity %>% 
+ dplyr:: select(Predilection, Margalef, Individuals, Taxa_S) %>% 
+  group_by(Predilection) %>%
+  summarise(abundance = mean(Individuals),
+            sd = sd(Individuals),
+            taxaS = mean(Taxa_S),
+            sdtax = sd(Taxa_S),
+            Margalef = mean(Margalef),
+            sdMargalef = sd(Margalef, na.rm = TRUE))
+
+colnames(diversity)
+  
+
+diversity %>% 
+ dplyr:: select(Predilection, Margalef) %>% 
+  group_by(Predilection) %>%
+  summarise(sd = sd(Margalef))
