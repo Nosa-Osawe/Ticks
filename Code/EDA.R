@@ -17,7 +17,7 @@ Tick <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_T
          ) %>%  
   mutate("R. sanguineus" = rowSums(across(c('R..sanguineus', 'R.fanguineus'))),
          "R. guilhoni" = rowSums(across(c('R..quilhoni','R..gulhoni'))),
-         "A. gemma" = rowSums(across(c("A.gemma", "R..gemma")))
+         "Amblyomma sp." = rowSums(across(c("A.gemma", "R..gemma")))
          ) %>% 
   select(-c("R..quilhoni","R.fanguineus",
             "R..gemma", "R..gulhoni", "R..sanguineus", "A.gemma"   )) %>% 
@@ -612,7 +612,7 @@ tick_famd_data<-Tick %>% # trying for sums
          "R.sp"= 13,
          "R.sa" =14,
          "R.gu"=15,
-         "A.ge"= 16) %>% 
+         "A.sp"= 16) %>% 
   as.data.frame()
 
 colnames(Tick)
@@ -636,7 +636,7 @@ tick_famd_data_mean<-Tick %>%  # trying for mean
          "R.sp"= 13,
          "R.sa" =14,
          "R.gu"=15,
-         "A.ge"= 16) %>% 
+         "A.sp"= 16) %>% 
   as.data.frame()
 view(tick_famd_data_mean)
 
@@ -658,7 +658,7 @@ Tick %>%
          "R.sp"= 13,
          "R.sa" =14,
          "R.gu"=15,
-         "A.ge"= 16) %>% 
+         "A.sp"= 16) %>% 
   as.data.frame()
 
 library("FactoMineR")
