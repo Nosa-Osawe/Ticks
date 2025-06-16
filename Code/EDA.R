@@ -17,10 +17,11 @@ Tick <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Organized_T
          ) %>%  
   mutate("R. sanguineus" = rowSums(across(c('R..sanguineus', 'R.fanguineus'))),
          "R. guilhoni" = rowSums(across(c('R..quilhoni','R..gulhoni'))),
-         "Amblyomma sp." = rowSums(across(c("A.gemma", "R..gemma")))
+         "Amblyomma sp." = rowSums(across(c("A.gemma", "R..gemma"))),
+         "A. variegatum" = rowSums(across(c("A. variegatum",  "A. cohaerens")))
          ) %>% 
   select(-c("R..quilhoni","R.fanguineus",
-            "R..gemma", "R..gulhoni", "R..sanguineus", "A.gemma"   )) %>% 
+            "R..gemma", "R..gulhoni", "R..sanguineus", "A.gemma", "A. cohaerens")) %>% 
   select(-X) # The useless (serial number) column
 
 colnames(Tick)
@@ -377,7 +378,7 @@ Cattle<- Tick %>%
   summarise(across(where(is.numeric), sum)) 
   
 
-view(Cattle)
+# view(Cattle)
 
 write.csv(Cattle,
           "C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\cattle.csv")
@@ -601,18 +602,17 @@ tick_famd_data<-Tick %>% # trying for sums
     across(where(is.numeric), sum)
   ) %>% 
   rename("A.va" =4,
-         "A.co" = 5,
-         "R.an"= 6,
-         "R.de" =7,
-         "R.ge" = 8,
-         "H.le" = 9,
-         "R.lu"= 10,
-         "R.mu" = 11,
-         "R.se" = 12,
-         "R.sp"= 13,
-         "R.sa" =14,
-         "R.gu"=15,
-         "A.sp"= 16) %>% 
+         "R.an"= 5,
+         "R.de" =6,
+         "R.ge" = 7,
+         "H.le" = 8,
+         "R.lu"= 9,
+         "R.mu" = 10,
+         "R.se" = 11,
+         "R.sp"= 12,
+         "R.sa" =13,
+         "R.gu"=14,
+         "A.sp"= 15) %>% 
   as.data.frame()
 
 colnames(Tick)
@@ -625,20 +625,19 @@ tick_famd_data_mean<-Tick %>%  # trying for mean
     across(where(is.numeric), mean)
   ) %>% 
   rename("A.va" =4,
-         "A.co" = 5,
-         "R.an"= 6,
-         "R.de" =7,
-         "R.ge" = 8,
-         "H.le" = 9,
-         "R.lu"= 10,
-         "R.mu" = 11,
-         "R.se" = 12,
-         "R.sp"= 13,
-         "R.sa" =14,
-         "R.gu"=15,
-         "A.sp"= 16) %>% 
+         "R.an"= 5,
+         "R.de" =6,
+         "R.ge" = 7,
+         "H.le" = 8,
+         "R.lu"= 9,
+         "R.mu" = 10,
+         "R.se" = 11,
+         "R.sp"= 12,
+         "R.sa" =13,
+         "R.gu"=14,
+         "A.sp"= 15) %>% 
   as.data.frame()
-view(tick_famd_data_mean)
+#view(tick_famd_data_mean)
 
 Tick %>% 
   select(-Cattle_ID) %>% 
@@ -647,18 +646,17 @@ Tick %>%
     across(where(is.numeric), ~ sum(. > 0, na.rm = TRUE))
   ) %>% 
   rename("A.va" =4,
-         "A.co" = 5,
-         "R.an"= 6,
-         "R.de" =7,
-         "R.ge" = 8,
-         "H.le" = 9,
-         "R.lu"= 10,
-         "R.mu" = 11,
-         "R.se" = 12,
-         "R.sp"= 13,
-         "R.sa" =14,
-         "R.gu"=15,
-         "A.sp"= 16) %>% 
+         "R.an"= 5,
+         "R.de" =6,
+         "R.ge" = 7,
+         "H.le" = 8,
+         "R.lu"= 9,
+         "R.mu" = 10,
+         "R.se" = 11,
+         "R.sp"= 12,
+         "R.sa" =13,
+         "R.gu"=14,
+         "A.sp"= 15) %>% 
   as.data.frame()
 
 library("FactoMineR")
@@ -684,8 +682,8 @@ famd_plot <- ggplot() +
   geom_text_repel(data = famd_quali, 
                   aes(x = Dim.1, y = Dim.2, label = rownames(famd_quali)
                   ), color = "red")+
-  labs(x = "Dim. 1 (26.16%)",
-       y = "Dim. 2 (21.52%)")+
+  labs(x = "Dim. 1 (25.18%)",
+       y = "Dim. 2 (20.60%)")+
   theme_bw()
 
 print(famd_plot)
@@ -722,4 +720,5 @@ colnames(diversity)
 diversity %>% 
  dplyr:: select(Predilection, Margalef) %>% 
   group_by(Predilection) %>%
-  summarise(sd = sd(Margalef))
+  summarise(sd = sd(Margalef),
+            se = sd/sqrt(length(Margalef)))

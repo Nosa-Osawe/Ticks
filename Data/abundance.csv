@@ -1,7 +1,7 @@
-"","Predeliction","A. variegatum","A. cohaerens","R. annulatus","R. decoloratus","R. geigyi","H. leachi","R. lunulatus","R. muhsamae","R. senegalensis","Rhipicephalus sp.","R. sanguineus","R. guilhoni","Amblyomma sp."
-"1","Belly",7,1,213,131,75,0,2,1,1,0,1,0,0
-"2","Head",6,2,133,100,74,1,9,5,2,0,11,12,1
-"3","Leg",15,2,175,140,80,0,4,1,0,0,0,0,0
-"4","Neck",4,2,118,73,77,0,0,1,1,0,3,3,0
-"5","Shoulder",0,0,21,44,28,0,4,0,0,0,0,2,0
-"6","Tail",15,2,158,79,70,2,7,2,2,3,0,4,0
+"","Predeliction","A. variegatum","R. annulatus","R. decoloratus","R. geigyi","H. leachi","R. lunulatus","R. muhsamae","R. senegalensis","Rhipicephalus sp.","R. sanguineus","R. guilhoni","Amblyomma sp."
+"1","Belly",8,213,131,75,0,2,1,1,0,1,0,0
+"2","Head",8,133,100,74,1,9,5,2,0,11,12,1
+"3","Leg",17,175,140,80,0,4,1,0,0,0,0,0
+"4","Neck",6,118,73,77,0,0,1,1,0,3,3,0
+"5","Shoulder",0,21,44,28,0,4,0,0,0,0,2,0
+"6","Tail",17,158,79,70,2,7,2,2,3,0,4,0
