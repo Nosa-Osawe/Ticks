@@ -722,3 +722,5 @@ diversity %>%
   group_by(Predilection) %>%
   summarise(sd = sd(Margalef),
             se = sd/sqrt(length(Margalef)))
+
+# End
