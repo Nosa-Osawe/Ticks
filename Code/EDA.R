@@ -723,4 +723,4 @@ diversity %>%
   summarise(sd = sd(Margalef),
             se = sd/sqrt(length(Margalef)))
 
-# End
+# End.
